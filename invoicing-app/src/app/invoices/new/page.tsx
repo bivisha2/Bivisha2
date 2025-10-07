@@ -1,6 +1,6 @@
 'use client';
 
-import CreateInvoice from '@/components/CreateInvoice';
+import CreateInvoice from '../../../components/CreateInvoice';
 
 export default function NewInvoicePage() {
   return (

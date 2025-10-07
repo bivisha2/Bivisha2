@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, FileText, Users, CreditCard, Settings } from 'lucide-react';
+import { Menu, X, FileText, Users, CreditCard, Settings, LogIn, LogOut, User } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const { user, logout } = useAuth();
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -65,14 +67,39 @@ const Navbar = () => {
                         </div>
                     </div>
 
-                    {/* CTA Button */}
+                    {/* Authentication Section */}
                     <div className="hidden md:block">
-                        <Link
-                            href="/signup"
-                            className="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition duration-300"
-                        >
-                            Get Started
-                        </Link>
+                        {user ? (
+                            <div className="flex items-center space-x-4">
+                                <div className="flex items-center space-x-2 text-white">
+                                    <User className="h-4 w-4" />
+                                    <span className="text-sm">{user.name}</span>
+                                </div>
+                                <button
+                                    onClick={logout}
+                                    className="flex items-center space-x-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center space-x-3">
+                                <Link
+                                    href="/login"
+                                    className="flex items-center space-x-1 text-white hover:bg-blue-800 hover:bg-opacity-50 px-3 py-2 rounded-md text-sm font-medium transition duration-300"
+                                >
+                                    <LogIn className="h-4 w-4" />
+                                    <span>Login</span>
+                                </Link>
+                                <Link
+                                    href="/signup"
+                                    className="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+                                >
+                                    Get Started
+                                </Link>
+                            </div>
+                        )}
                     </div>
 
                     {/* Mobile menu button */}
@@ -133,13 +160,39 @@ const Navbar = () => {
                         >
                             Pricing
                         </Link>
-                        <Link
-                            href="/signup"
-                            className="text-white hover:bg-blue-800 hover:bg-opacity-50 block px-3 py-2 rounded-md text-base font-medium"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            Get Started
-                        </Link>
+                        {user ? (
+                            <>
+                                <div className="text-white px-3 py-2 text-base font-medium border-b border-blue-600 mb-2">
+                                    Welcome, {user.name}
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        logout();
+                                        setIsOpen(false);
+                                    }}
+                                    className="text-white hover:bg-red-700 block w-full text-left px-3 py-2 rounded-md text-base font-medium"
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="text-white hover:bg-blue-800 hover:bg-opacity-50 block px-3 py-2 rounded-md text-base font-medium"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    href="/signup"
+                                    className="text-white hover:bg-blue-800 hover:bg-opacity-50 block px-3 py-2 rounded-md text-base font-medium"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Get Started
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             )}

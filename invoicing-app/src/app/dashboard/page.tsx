@@ -1,5 +1,8 @@
 'use client';
 
+import { useAuth } from '../../contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import {
     DollarSign,
@@ -15,6 +18,22 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard() {
+    const { user, logout } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!user) {
+            router.push('/login');
+        }
+    }, [user, router]);
+
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            </div>
+        );
+    }
     // Mock data - in real app this would come from API
     const stats = {
         totalRevenue: 45230,

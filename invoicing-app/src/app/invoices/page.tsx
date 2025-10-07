@@ -3,12 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { FileText, Plus, Search, Filter, Eye, Edit, Trash2, Download } from 'lucide-react';
-import SearchBox from '@/components/SearchBox';
-import Button from '@/components/Button';
-import Breadcrumb from '@/components/Breadcrumb';
+import SearchBox from '../../components/SearchBox';
+import Button from '../../components/Button';
+import Breadcrumb from '../../components/Breadcrumb';
+import CreateInvoice from '../../components/CreateInvoice';
+import InvoiceView from '../../components/InvoiceView';
 
 export default function Invoices() {
     const [selectedFilter, setSelectedFilter] = useState('all');
+    const [currentView, setCurrentView] = useState('list'); // 'list', 'create', 'view'
+    const [selectedInvoice, setSelectedInvoice] = useState(null);
 
     // Mock data - in real app this would come from API
     const invoices = [
@@ -78,6 +82,34 @@ export default function Invoices() {
         ? invoices
         : invoices.filter(invoice => invoice.status === selectedFilter);
 
+    // Sample invoice data for preview
+    const sampleInvoiceData = {
+        invoiceNumber: 'INV-001',
+        invoiceDate: '2025-09-20',
+        dueDate: '2025-10-05',
+        companyName: 'InvoicePro Solutions Pvt. Ltd.',
+        companyAddress: 'Business District, Tech Park, Your City',
+        companyPhone: '+977 1234567890',
+        companyEmail: 'info@invoicepro.com',
+        companyVATIN: '123456789',
+        clientName: 'Acme Corporation',
+        clientAddress: 'Corporate Plaza, Business District, Client City',
+        clientVATIN: '987654321',
+        items: [
+            {
+                description: 'Web Development Services',
+                details: 'Custom website development with responsive design',
+                amount: 2500
+            }
+        ],
+        subtotal: 2500,
+        vatRate: 13,
+        vatAmount: 325,
+        total: 2825,
+        totalInWords: 'Two Thousand Eight Hundred Twenty Five Only',
+        notes: 'Payment due within 15 days of invoice date. Late payments may incur additional charges.'
+    };
+
     const breadcrumbItems = [
         { label: 'Invoices' }
     ];
@@ -89,6 +121,45 @@ export default function Invoices() {
         { value: 'paid', label: 'Paid', count: getStatusCount('paid') },
         { value: 'overdue', label: 'Overdue', count: getStatusCount('overdue') }
     ];
+
+    const handleViewInvoice = (invoice: any) => {
+        setSelectedInvoice({ ...sampleInvoiceData, ...invoice });
+        setCurrentView('view');
+    };
+
+    const handleEditInvoice = (invoice: any) => {
+        setSelectedInvoice(invoice);
+        setCurrentView('create');
+    };
+
+    // Render different views based on currentView state
+    if (currentView === 'create') {
+        return <CreateInvoice />;
+    }
+
+    if (currentView === 'view' && selectedInvoice) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-8">
+                <div className="max-w-6xl mx-auto px-4">
+                    <div className="mb-6">
+                        <button
+                            onClick={() => setCurrentView('list')}
+                            className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                            ← Back to Invoices
+                        </button>
+                    </div>
+                    <InvoiceView
+                        invoice={selectedInvoice}
+                        onEdit={() => handleEditInvoice(selectedInvoice)}
+                        onDownload={() => window.print()}
+                        onPrint={() => window.print()}
+                        onSend={() => alert('Send functionality would be implemented here')}
+                    />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 pt-8">
@@ -156,8 +227,8 @@ export default function Invoices() {
                                     key={option.value}
                                     onClick={() => setSelectedFilter(option.value)}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedFilter === option.value
-                                            ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >
                                     {option.label} ({option.count})
@@ -171,12 +242,14 @@ export default function Invoices() {
                                 className="w-full lg:w-64"
                                 onSearch={(query) => console.log('Search:', query)}
                             />
-                            <Link href="/invoices/new">
-                                <Button variant="primary" className="flex items-center whitespace-nowrap">
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    New Invoice
-                                </Button>
-                            </Link>
+                            <Button
+                                variant="primary"
+                                className="flex items-center whitespace-nowrap"
+                                onClick={() => setCurrentView('create')}
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                New Invoice
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -230,16 +303,32 @@ export default function Invoices() {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 <div className="flex items-center space-x-2">
-                                                    <button className="text-blue-600 hover:text-blue-900 transition-colors" title="View">
+                                                    <button
+                                                        onClick={() => handleViewInvoice(invoice)}
+                                                        className="text-blue-600 hover:text-blue-900 transition-colors"
+                                                        title="View"
+                                                    >
                                                         <Eye className="h-4 w-4" />
                                                     </button>
-                                                    <button className="text-gray-600 hover:text-gray-900 transition-colors" title="Edit">
+                                                    <button
+                                                        onClick={() => handleEditInvoice(invoice)}
+                                                        className="text-gray-600 hover:text-gray-900 transition-colors"
+                                                        title="Edit"
+                                                    >
                                                         <Edit className="h-4 w-4" />
                                                     </button>
-                                                    <button className="text-green-600 hover:text-green-900 transition-colors" title="Download">
+                                                    <button
+                                                        onClick={() => alert('Download functionality would be implemented here')}
+                                                        className="text-green-600 hover:text-green-900 transition-colors"
+                                                        title="Download"
+                                                    >
                                                         <Download className="h-4 w-4" />
                                                     </button>
-                                                    <button className="text-red-600 hover:text-red-900 transition-colors" title="Delete">
+                                                    <button
+                                                        onClick={() => alert('Delete functionality would be implemented here')}
+                                                        className="text-red-600 hover:text-red-900 transition-colors"
+                                                        title="Delete"
+                                                    >
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
                                                 </div>
@@ -261,11 +350,12 @@ export default function Invoices() {
                                     : `You don't have any ${selectedFilter} invoices at the moment`
                                 }
                             </p>
-                            <Link href="/invoices/new">
-                                <Button variant="primary">
-                                    Create Your First Invoice
-                                </Button>
-                            </Link>
+                            <Button
+                                variant="primary"
+                                onClick={() => setCurrentView('create')}
+                            >
+                                Create Your First Invoice
+                            </Button>
                         </div>
                     )}
                 </div>
