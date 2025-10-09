@@ -70,7 +70,7 @@ export default function SignupPage() {
 
     try {
       const result = await register(formData);
-      
+
       if (result.success) {
         setMessage({ type: 'success', text: 'Account created successfully! Redirecting...' });
         setTimeout(() => {
@@ -89,7 +89,7 @@ export default function SignupPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -127,9 +127,8 @@ export default function SignupPage() {
                   autoComplete="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className={`appearance-none block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
-                    errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
-                  }`}
+                  className={`appearance-none block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
+                    }`}
                   placeholder="Enter your full name"
                 />
               </div>
@@ -157,9 +156,8 @@ export default function SignupPage() {
                   autoComplete="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`appearance-none block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
-                    errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
-                  }`}
+                  className={`appearance-none block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
+                    }`}
                   placeholder="Enter your email"
                 />
               </div>
@@ -187,9 +185,8 @@ export default function SignupPage() {
                   autoComplete="new-password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`appearance-none block w-full pl-10 pr-10 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
-                    errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
-                  }`}
+                  className={`appearance-none block w-full pl-10 pr-10 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
+                    }`}
                   placeholder="Create a password"
                 />
                 <button
@@ -210,7 +207,7 @@ export default function SignupPage() {
                   {errors.password}
                 </p>
               )}
-              
+
               {/* Password Requirements */}
               {formData.password && (
                 <div className="mt-2 space-y-1">
@@ -247,9 +244,8 @@ export default function SignupPage() {
                   autoComplete="new-password"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`appearance-none block w-full pl-10 pr-10 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
-                    errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
-                  }`}
+                  className={`appearance-none block w-full pl-10 pr-10 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
+                    }`}
                   placeholder="Confirm your password"
                 />
                 <button
@@ -300,11 +296,10 @@ export default function SignupPage() {
 
           {/* Error/Success Message */}
           {message && (
-            <div className={`p-4 rounded-lg flex items-center ${
-              message.type === 'success' 
-                ? 'bg-green-50 border border-green-200 text-green-700' 
+            <div className={`p-4 rounded-lg flex items-center ${message.type === 'success'
+                ? 'bg-green-50 border border-green-200 text-green-700'
                 : 'bg-red-50 border border-red-200 text-red-700'
-            }`}>
+              }`}>
               {message.type === 'success' ? (
                 <CheckCircle className="h-5 w-5 mr-2" />
               ) : (
@@ -319,11 +314,10 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white transition-colors ${
-                isLoading 
-                  ? 'bg-gray-400 cursor-not-allowed' 
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white transition-colors ${isLoading
+                  ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-              }`}
+                }`}
             >
               {isLoading ? (
                 <>

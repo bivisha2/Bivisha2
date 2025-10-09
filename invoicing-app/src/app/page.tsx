@@ -4,12 +4,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  FileText, 
-  Clock, 
-  Shield, 
-  Users, 
-  TrendingUp, 
+import {
+  FileText,
+  Clock,
+  Shield,
+  Users,
+  TrendingUp,
   CheckCircle,
   Star,
   ArrowRight,
@@ -39,7 +39,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Create, send, and track invoices with ease. Get paid faster with our 
+              Create, send, and track invoices with ease. Get paid faster with our
               modern invoicing solution designed for businesses of all sizes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

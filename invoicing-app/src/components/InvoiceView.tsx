@@ -38,12 +38,12 @@ interface InvoiceViewProps {
   onSend?: () => void;
 }
 
-export default function InvoiceView({ 
-  invoice, 
-  onEdit, 
-  onDownload, 
-  onPrint, 
-  onSend 
+export default function InvoiceView({
+  invoice,
+  onEdit,
+  onDownload,
+  onPrint,
+  onSend
 }: InvoiceViewProps) {
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-lg print:shadow-none">

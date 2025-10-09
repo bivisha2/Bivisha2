@@ -139,7 +139,7 @@ class DataStore {
   updateClient(id: string, updates: Partial<Client>): Client | null {
     const index = this.clients.findIndex(c => c.id === id);
     if (index === -1) return null;
-    
+
     this.clients[index] = {
       ...this.clients[index],
       ...updates,
@@ -152,7 +152,7 @@ class DataStore {
   deleteClient(id: string): boolean {
     const index = this.clients.findIndex(c => c.id === id);
     if (index === -1) return false;
-    
+
     const client = this.clients[index];
     this.clients.splice(index, 1);
     this.logAction('delete_client', id, `Deleted client: ${client.name}`);
@@ -192,7 +192,7 @@ class DataStore {
   updateProduct(id: string, updates: Partial<Product>): Product | null {
     const index = this.products.findIndex(p => p.id === id);
     if (index === -1) return null;
-    
+
     this.products[index] = {
       ...this.products[index],
       ...updates,
@@ -230,7 +230,7 @@ class DataStore {
   updateInvoice(id: string, updates: Partial<Invoice>): Invoice | null {
     const index = this.invoices.findIndex(i => i.id === id);
     if (index === -1) return null;
-    
+
     this.invoices[index] = {
       ...this.invoices[index],
       ...updates,
@@ -263,7 +263,7 @@ class DataStore {
     };
 
     invoice.paymentHistory.push(newPayment);
-    
+
     // Update invoice status based on payments
     const totalPaid = invoice.paymentHistory.reduce((sum, p) => sum + p.amount, 0);
     if (totalPaid >= invoice.total) {
@@ -287,7 +287,7 @@ class DataStore {
       .filter(i => i.status !== 'paid' && i.status !== 'cancelled')
       .reduce((sum, i) => sum + i.total, 0);
 
-    const overdueInvoices = this.invoices.filter(i => 
+    const overdueInvoices = this.invoices.filter(i =>
       i.status !== 'paid' && new Date(i.dueDate) < new Date()
     );
 
@@ -306,12 +306,12 @@ class DataStore {
     };
   }
 
-  private getTopClients(limit: number): Array<{client: Client, totalRevenue: number, invoiceCount: number}> {
-    const clientStats = new Map<string, {totalRevenue: number, invoiceCount: number}>();
-    
+  private getTopClients(limit: number): Array<{ client: Client, totalRevenue: number, invoiceCount: number }> {
+    const clientStats = new Map<string, { totalRevenue: number, invoiceCount: number }>();
+
     this.invoices.forEach(invoice => {
       if (invoice.status === 'paid') {
-        const current = clientStats.get(invoice.clientId) || {totalRevenue: 0, invoiceCount: 0};
+        const current = clientStats.get(invoice.clientId) || { totalRevenue: 0, invoiceCount: 0 };
         clientStats.set(invoice.clientId, {
           totalRevenue: current.totalRevenue + invoice.total,
           invoiceCount: current.invoiceCount + 1,
@@ -329,9 +329,9 @@ class DataStore {
       .slice(0, limit);
   }
 
-  private getMonthlyRevenue(): Array<{month: string, revenue: number}> {
+  private getMonthlyRevenue(): Array<{ month: string, revenue: number }> {
     const monthlyData = new Map<string, number>();
-    
+
     this.invoices
       .filter(i => i.status === 'paid')
       .forEach(invoice => {
@@ -341,7 +341,7 @@ class DataStore {
       });
 
     return Array.from(monthlyData.entries())
-      .map(([month, revenue]) => ({month, revenue}))
+      .map(([month, revenue]) => ({ month, revenue }))
       .sort((a, b) => a.month.localeCompare(b.month));
   }
 
@@ -358,7 +358,7 @@ class DataStore {
   }
 
   getAuditLog(): AuditLogEntry[] {
-    return [...this.auditLog].sort((a, b) => 
+    return [...this.auditLog].sort((a, b) =>
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
   }
@@ -379,7 +379,7 @@ class DataStore {
   }
 
   // Export/Import functionality
-  exportData(): {clients: Client[], products: Product[], invoices: Invoice[]} {
+  exportData(): { clients: Client[], products: Product[], invoices: Invoice[] } {
     return {
       clients: this.getAllClients(),
       products: this.getAllProducts(),
@@ -387,7 +387,7 @@ class DataStore {
     };
   }
 
-  importData(data: {clients?: Client[], products?: Product[], invoices?: Invoice[]}): void {
+  importData(data: { clients?: Client[], products?: Product[], invoices?: Invoice[] }): void {
     if (data.clients) {
       this.clients = [...this.clients, ...data.clients];
     }
@@ -437,17 +437,17 @@ class DataStore {
 
     this.users.push(newUser);
     this.logAction('register_user', newUser.id, `User registered: ${newUser.email}`);
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       message: 'User registered successfully',
       user: { ...newUser, password: '' } // Don't return password
     };
   }
 
   loginUser(email: string, password: string): { success: boolean; message: string; session?: AuthSession } {
-    const user = this.users.find(u => 
-      u.email.toLowerCase() === email.toLowerCase() && 
+    const user = this.users.find(u =>
+      u.email.toLowerCase() === email.toLowerCase() &&
       u.isActive
     );
 
@@ -620,8 +620,8 @@ export interface Analytics {
   paidInvoices: number;
   pendingInvoices: number;
   overdueInvoices: number;
-  topClients: Array<{client: Client, totalRevenue: number, invoiceCount: number}>;
-  monthlyRevenue: Array<{month: string, revenue: number}>;
+  topClients: Array<{ client: Client, totalRevenue: number, invoiceCount: number }>;
+  monthlyRevenue: Array<{ month: string, revenue: number }>;
 }
 
 export interface AuditLogEntry {

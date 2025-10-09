@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  TrendingUp, 
-  DollarSign, 
-  Users, 
-  FileText, 
-  AlertCircle, 
+import {
+  TrendingUp,
+  DollarSign,
+  Users,
+  FileText,
+  AlertCircle,
   Calendar,
   BarChart3,
   PieChart,
@@ -64,10 +64,10 @@ export default function AnalyticsDashboard() {
     );
   }
 
-  const revenueGrowth = analytics.monthlyRevenue.length > 1 
-    ? ((analytics.monthlyRevenue[analytics.monthlyRevenue.length - 1]?.revenue || 0) - 
-       (analytics.monthlyRevenue[analytics.monthlyRevenue.length - 2]?.revenue || 0)) / 
-       (analytics.monthlyRevenue[analytics.monthlyRevenue.length - 2]?.revenue || 1) * 100 
+  const revenueGrowth = analytics.monthlyRevenue.length > 1
+    ? ((analytics.monthlyRevenue[analytics.monthlyRevenue.length - 1]?.revenue || 0) -
+      (analytics.monthlyRevenue[analytics.monthlyRevenue.length - 2]?.revenue || 0)) /
+    (analytics.monthlyRevenue[analytics.monthlyRevenue.length - 2]?.revenue || 1) * 100
     : 0;
 
   return (
@@ -183,7 +183,7 @@ export default function AnalyticsDashboard() {
               {analytics.monthlyRevenue.slice(-6).map((item, index) => {
                 const maxRevenue = Math.max(...analytics.monthlyRevenue.map(r => r.revenue));
                 const percentage = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0;
-                
+
                 return (
                   <div key={item.month} className="flex items-center space-x-3">
                     <div className="w-16 text-sm text-gray-600">
@@ -245,7 +245,7 @@ export default function AnalyticsDashboard() {
                 </div>
               </div>
             </div>
-            
+
             {/* Visual pie chart representation */}
             <div className="mt-6 relative">
               <div className="w-32 h-32 mx-auto">

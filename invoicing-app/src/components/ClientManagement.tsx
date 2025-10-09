@@ -62,7 +62,7 @@ export default function ClientManagement() {
     if (!formData.address.trim()) newErrors.address = 'Address is required';
 
     // Check for duplicate email (excluding current client when editing)
-    const existingClient = clients.find(c => 
+    const existingClient = clients.find(c =>
       c.email === formData.email && c.id !== editingClient?.id
     );
     if (existingClient) {
@@ -75,7 +75,7 @@ export default function ClientManagement() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     try {
@@ -194,7 +194,7 @@ export default function ClientManagement() {
                   <p className="font-medium">{selectedClient.email}</p>
                 </div>
               </div>
-              
+
               {selectedClient.phone && (
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-green-600" />
@@ -266,12 +266,11 @@ export default function ClientManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">Rs. {invoice.total.toLocaleString()}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${
-                          invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
-                          invoice.status === 'overdue' ? 'bg-red-100 text-red-800' :
-                          invoice.status === 'sent' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
+                            invoice.status === 'overdue' ? 'bg-red-100 text-red-800' :
+                              invoice.status === 'sent' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
+                          }`}>
                           {invoice.status}
                         </span>
                       </td>
@@ -365,10 +364,9 @@ export default function ClientManagement() {
                     <input
                       type="text"
                       value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.name ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.name ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="Client full name"
                     />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -381,7 +379,7 @@ export default function ClientManagement() {
                     <input
                       type="text"
                       value={formData.company}
-                      onChange={(e) => setFormData({...formData, company: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Company name"
                     />
@@ -396,10 +394,9 @@ export default function ClientManagement() {
                     <input
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.email ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.email ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="client@example.com"
                     />
                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -412,7 +409,7 @@ export default function ClientManagement() {
                     <input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="+1-555-0123"
                     />
@@ -425,11 +422,10 @@ export default function ClientManagement() {
                   </label>
                   <textarea
                     value={formData.address}
-                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     rows={3}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.address ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.address ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Full address including city, state, country"
                   />
                   {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
@@ -443,7 +439,7 @@ export default function ClientManagement() {
                     <input
                       type="text"
                       value={formData.vatNumber}
-                      onChange={(e) => setFormData({...formData, vatNumber: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="VAT123456789"
                     />
@@ -456,7 +452,7 @@ export default function ClientManagement() {
                     <input
                       type="number"
                       value={formData.creditLimit}
-                      onChange={(e) => setFormData({...formData, creditLimit: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, creditLimit: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="50000"
                       min="0"
@@ -571,7 +567,7 @@ export default function ClientManagement() {
                 {searchQuery ? 'No clients found' : 'No clients yet'}
               </h3>
               <p className="text-gray-500 mb-6">
-                {searchQuery 
+                {searchQuery
                   ? 'Try adjusting your search terms'
                   : 'Get started by adding your first client'
                 }

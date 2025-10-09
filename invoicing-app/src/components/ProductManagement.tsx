@@ -66,7 +66,7 @@ export default function ProductManagement() {
 
     // Check for duplicate SKU (if provided)
     if (formData.sku.trim()) {
-      const existingProduct = products.find(p => 
+      const existingProduct = products.find(p =>
         p.sku === formData.sku && p.id !== editingProduct?.id
       );
       if (existingProduct) {
@@ -80,7 +80,7 @@ export default function ProductManagement() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     try {
@@ -252,10 +252,9 @@ export default function ProductManagement() {
                     <input
                       type="text"
                       value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.name ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.name ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="Product name"
                     />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -268,10 +267,9 @@ export default function ProductManagement() {
                     <input
                       type="text"
                       value={formData.sku}
-                      onChange={(e) => setFormData({...formData, sku: e.target.value})}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.sku ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.sku ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="SKU-001"
                     />
                     {errors.sku && <p className="text-red-500 text-xs mt-1">{errors.sku}</p>}
@@ -284,7 +282,7 @@ export default function ProductManagement() {
                   </label>
                   <textarea
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Product description"
@@ -299,10 +297,9 @@ export default function ProductManagement() {
                     <input
                       type="number"
                       value={formData.price}
-                      onChange={(e) => setFormData({...formData, price: e.target.value})}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.price ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.price ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="100.00"
                       min="0"
                       step="0.01"
@@ -317,10 +314,9 @@ export default function ProductManagement() {
                     <input
                       type="number"
                       value={formData.taxRate}
-                      onChange={(e) => setFormData({...formData, taxRate: e.target.value})}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.taxRate ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      onChange={(e) => setFormData({ ...formData, taxRate: e.target.value })}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.taxRate ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="13"
                       min="0"
                       step="0.01"
@@ -335,7 +331,7 @@ export default function ProductManagement() {
                     <input
                       type="number"
                       value={formData.inStock}
-                      onChange={(e) => setFormData({...formData, inStock: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, inStock: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="100"
                       min="0"
@@ -350,7 +346,7 @@ export default function ProductManagement() {
                   <input
                     type="text"
                     value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Services, Products, etc."
                     list="categories"
@@ -473,7 +469,7 @@ export default function ProductManagement() {
                 {searchQuery ? 'No products found' : 'No products yet'}
               </h3>
               <p className="text-gray-500 mb-6">
-                {searchQuery 
+                {searchQuery
                   ? 'Try adjusting your search terms'
                   : 'Get started by adding your first product'
                 }

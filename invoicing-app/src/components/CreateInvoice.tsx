@@ -58,12 +58,12 @@ function convertNumberToWords(num: number): string {
 
   function convertHundreds(n: number): string {
     let result = '';
-    
+
     if (n >= 100) {
       result += ones[Math.floor(n / 100)] + ' Hundred ';
       n %= 100;
     }
-    
+
     if (n >= 20) {
       result += tens[Math.floor(n / 10)] + ' ';
       n %= 10;
@@ -71,17 +71,17 @@ function convertNumberToWords(num: number): string {
       result += teens[n - 10] + ' ';
       return result;
     }
-    
+
     if (n > 0) {
       result += ones[n] + ' ';
     }
-    
+
     return result;
   }
 
   let result = '';
   let thousandCounter = 0;
-  
+
   while (num > 0) {
     if (num % 1000 !== 0) {
       result = convertHundreds(num % 1000) + thousands[thousandCounter] + ' ' + result;
@@ -89,7 +89,7 @@ function convertNumberToWords(num: number): string {
     num = Math.floor(num / 1000);
     thousandCounter++;
   }
-  
+
   return result.trim() + ' Only';
 }
 
@@ -118,7 +118,7 @@ export default function CreateInvoice() {
   const updateItem = (index: number, field: keyof InvoiceItem, value: string | number) => {
     setFormData(prev => ({
       ...prev,
-      items: prev.items.map((item, i) => 
+      items: prev.items.map((item, i) =>
         i === index ? { ...item, [field]: value } : item
       )
     }));
@@ -191,7 +191,7 @@ export default function CreateInvoice() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h2 className="text-sm font-semibold text-black">Company Information</h2>
-                
+
                 <div>
                   <label className="block text-xs font-medium text-black mb-1">Company Name</label>
                   <input
@@ -246,7 +246,7 @@ export default function CreateInvoice() {
               {/* Client Information */}
               <div className="space-y-2">
                 <h2 className="text-sm font-semibold text-black">Client Information</h2>
-                
+
                 <div>
                   <label className="block text-xs font-medium text-black mb-1">Client Name</label>
                   <input
