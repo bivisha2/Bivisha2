@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
+import DatabaseStatus from '../../components/DatabaseStatus';
 import {
     DollarSign,
     FileText,
@@ -234,6 +235,11 @@ export default function Dashboard() {
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                {/* Database Status */}
+                <div className="mt-8">
+                    <DatabaseStatus />
                 </div>
             </div>
         </div>

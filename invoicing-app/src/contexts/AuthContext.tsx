@@ -3,17 +3,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
-  id: string;
+  id: string | number;
   name: string;
   email: string;
   role: 'admin' | 'user';
-  isActive: boolean;
-}
-
-interface AuthSession {
-  userId: string;
-  token: string;
-  expiresAt: Date;
+  isActive?: boolean;
+  created_at?: Date;
 }
 
 interface AuthContextType {
@@ -29,26 +24,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Mock users data (in production, this would be in a database)
-  const mockUsers = [
-    {
-      id: '1',
-      name: 'Demo User',
-      email: 'demo@invoicepro.com',
-      password: 'Demo123', // In production, this would be hashed
-      role: 'admin' as const,
-      isActive: true
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      email: 'john@example.com',
-      password: 'password123',
-      role: 'user' as const,
-      isActive: true
-    }
-  ];
 
   useEffect(() => {
     // Check for existing session on load
@@ -67,77 +42,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
     try {
-      // Find user in mock data
-      const foundUser = mockUsers.find(u => u.email === email && u.password === password);
+      setIsLoading(true);
+      
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (!foundUser) {
-        return { success: false, message: 'Invalid email or password' };
+      const data = await response.json();
+
+      if (data.success) {
+        setUser(data.user);
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        return { success: true, message: data.message };
+      } else {
+        return { success: false, message: data.message };
       }
-
-      if (!foundUser.isActive) {
-        return { success: false, message: 'Account is deactivated' };
-      }
-
-      // Create user session
-      const userSession: User = {
-        id: foundUser.id,
-        name: foundUser.name,
-        email: foundUser.email,
-        role: foundUser.role,
-        isActive: foundUser.isActive
-      };
-
-      setUser(userSession);
-      localStorage.setItem('currentUser', JSON.stringify(userSession));
-
-      return { success: true, message: 'Login successful' };
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, message: 'Login failed. Please try again.' };
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const register = async (data: { name: string; email: string; password: string }): Promise<{ success: boolean; message: string }> => {
     try {
-      // Check if user already exists
-      const existingUser = mockUsers.find(u => u.email === data.email);
-      if (existingUser) {
-        return { success: false, message: 'User with this email already exists' };
+      setIsLoading(true);
+
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setUser(result.user);
+        localStorage.setItem('currentUser', JSON.stringify(result.user));
+        return { success: true, message: result.message };
+      } else {
+        return { success: false, message: result.message };
       }
-
-      // Create new user
-      const newUser = {
-        id: Math.random().toString(36).substr(2, 9),
-        name: data.name,
-        email: data.email,
-        password: data.password, // In production, this would be hashed
-        role: 'user' as const,
-        isActive: true
-      };
-
-      // Add to mock users (in production, this would be saved to database)
-      mockUsers.push(newUser);
-
-      // Create user session
-      const userSession: User = {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        isActive: newUser.isActive
-      };
-
-      setUser(userSession);
-      localStorage.setItem('currentUser', JSON.stringify(userSession));
-
-      return { success: true, message: 'Registration successful' };
     } catch (error) {
       console.error('Registration error:', error);
       return { success: false, message: 'Registration failed. Please try again.' };
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  const logout = () => {
+  };  const logout = () => {
     setUser(null);
     localStorage.removeItem('currentUser');
   };
