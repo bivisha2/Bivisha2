@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
     try {
       setIsLoading(true);
-      
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };  const logout = () => {
+  }; const logout = () => {
     setUser(null);
     localStorage.removeItem('currentUser');
   };

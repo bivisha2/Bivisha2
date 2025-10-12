@@ -267,9 +267,9 @@ export default function ClientManagement() {
                       <td className="px-6 py-4 whitespace-nowrap">Rs. {invoice.total.toLocaleString()}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
-                            invoice.status === 'overdue' ? 'bg-red-100 text-red-800' :
-                              invoice.status === 'sent' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-gray-100 text-gray-800'
+                          invoice.status === 'overdue' ? 'bg-red-100 text-red-800' :
+                            invoice.status === 'sent' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
                           }`}>
                           {invoice.status}
                         </span>
