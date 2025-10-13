@@ -10,6 +10,51 @@ import Breadcrumb from '@/components/Breadcrumb';
 export default function Invoices() {
     const [selectedFilter, setSelectedFilter] = useState('all');
 
+    const handleDownloadInvoice = async (invoice: any) => {
+        try {
+            // Dynamic import to avoid SSR issues
+            const jsPDF = (await import('jspdf')).default;
+
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Set up the PDF content
+            pdf.setFontSize(20);
+            pdf.text('InvoicePro', 20, 30);
+            pdf.setFontSize(16);
+            pdf.text('Tax Invoice', 150, 30);
+
+            // Invoice details
+            pdf.setFontSize(12);
+            pdf.text(`Invoice No: ${invoice.id}`, 20, 50);
+            pdf.text(`Date: ${new Date(invoice.date).toLocaleDateString()}`, 20, 60);
+            pdf.text(`Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}`, 20, 70);
+
+            // Client details
+            pdf.text(`Client: ${invoice.client}`, 20, 90);
+            pdf.text(`Amount: $${invoice.amount.toLocaleString()}`, 20, 100);
+            pdf.text(`Status: ${invoice.status.toUpperCase()}`, 20, 110);
+
+            // Add a simple line
+            pdf.line(20, 120, 190, 120);
+
+            // Footer
+            pdf.text('Thank you for your business!', 20, 140);
+            pdf.text('invoicepro.com', 20, 260);
+
+            // Download the PDF
+            const fileName = `${invoice.id}_${new Date().toISOString().split('T')[0]}.pdf`;
+            pdf.save(fileName);
+
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            alert('Error generating PDF. Please try again.');
+        }
+    };
+
     // Mock data - in real app this would come from API
     const invoices = [
         {
@@ -236,7 +281,11 @@ export default function Invoices() {
                                                     <button className="text-gray-600 hover:text-gray-900 transition-colors" title="Edit">
                                                         <Edit className="h-4 w-4" />
                                                     </button>
-                                                    <button className="text-green-600 hover:text-green-900 transition-colors" title="Download">
+                                                    <button 
+                                                        onClick={() => handleDownloadInvoice(invoice)}
+                                                        className="text-green-600 hover:text-green-900 transition-colors" 
+                                                        title="Download"
+                                                    >
                                                         <Download className="h-4 w-4" />
                                                     </button>
                                                     <button className="text-red-600 hover:text-red-900 transition-colors" title="Delete">

@@ -195,6 +195,63 @@ export default function Settings() {
                         </div>
                     </div>
                 </div>
+
+                {/* Testimonials Section */}
+                <div className="mt-12 mb-16">
+                    <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">What Our Users Say</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {/* Testimonial 1 */}
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center mb-4">
+                                <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <span className="text-blue-600 font-semibold text-lg">SA</span>
+                                </div>
+                                <div className="ml-4">
+                                    <h3 className="text-lg font-semibold text-gray-900">Sarah Anderson</h3>
+                                    <p className="text-sm text-gray-600">Small Business Owner</p>
+                                </div>
+                            </div>
+                            <p className="text-gray-700">"This invoicing app has transformed how I manage my business finances. The interface is intuitive and the features are exactly what I need."</p>
+                            <div className="flex text-yellow-400 mt-4">
+                                {"★".repeat(5)}
+                            </div>
+                        </div>
+
+                        {/* Testimonial 2 */}
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center mb-4">
+                                <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                                    <span className="text-green-600 font-semibold text-lg">MJ</span>
+                                </div>
+                                <div className="ml-4">
+                                    <h3 className="text-lg font-semibold text-gray-900">Michael Johnson</h3>
+                                    <p className="text-sm text-gray-600">Freelance Designer</p>
+                                </div>
+                            </div>
+                            <p className="text-gray-700">"The automated invoice generation saves me hours each month. The professional templates make my business look more established."</p>
+                            <div className="flex text-yellow-400 mt-4">
+                                {"★".repeat(5)}
+                            </div>
+                        </div>
+
+                        {/* Testimonial 3 */}
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center mb-4">
+                                <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <span className="text-purple-600 font-semibold text-lg">RP</span>
+                                </div>
+                                <div className="ml-4">
+                                    <h3 className="text-lg font-semibold text-gray-900">Rachel Peters</h3>
+                                    <p className="text-sm text-gray-600">Marketing Agency</p>
+                                </div>
+                            </div>
+                            <p className="text-gray-700">"The ability to track payments and send automatic reminders has greatly improved our cash flow. Highly recommended!"</p>
+                            <div className="flex text-yellow-400 mt-4">
+                                {"★".repeat(5)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
