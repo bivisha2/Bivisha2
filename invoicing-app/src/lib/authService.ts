@@ -384,7 +384,7 @@ export const getUserSessions = async (userId: number): Promise<UserSession[]> =>
       ORDER BY created_at DESC
     `, [userId]);
 
-    return result.rows.map(row => ({
+    return result.rows.map((row: any) => ({
       id: row.id,
       userId: row.user_id,
       sessionToken: row.session_token,
