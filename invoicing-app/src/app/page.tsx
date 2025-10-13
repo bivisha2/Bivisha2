@@ -1,12 +1,15 @@
 'use client';
 
+import { useAuth } from '../contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  FileText, 
-  Clock, 
-  Shield, 
-  Users, 
-  TrendingUp, 
+import {
+  FileText,
+  Clock,
+  Shield,
+  Users,
+  TrendingUp,
   CheckCircle,
   Star,
   ArrowRight,
@@ -15,6 +18,14 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Hero Section */}
@@ -28,7 +39,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Create, send, and track invoices with ease. Get paid faster with our 
+              Create, send, and track invoices with ease. Get paid faster with our
               modern invoicing solution designed for businesses of all sizes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
