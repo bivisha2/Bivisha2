@@ -3,12 +3,12 @@
 import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
-    ArrowLeft, 
-    Plus, 
-    Trash2, 
-    Save, 
-    Send, 
+import {
+    ArrowLeft,
+    Plus,
+    Trash2,
+    Save,
+    Send,
     Calendar,
     User,
     Building,
@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import Button from '@/components/Button';
 import Breadcrumb from '@/components/Breadcrumb';
+import { createInvoice, generateInvoiceNumber } from '@/services/invoiceService';
+import type { Invoice, RecurringFrequency } from '@/types/invoice';
 
 interface InvoiceItem {
     id: string;
@@ -46,9 +48,11 @@ export default function NewInvoice() {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    const [selectedTemplate, setSelectedTemplate] = useState('modern');
+    const [recurringFrequency, setRecurringFrequency] = useState<RecurringFrequency>('none');
 
     // Invoice basic info
-    const [invoiceNumber, setInvoiceNumber] = useState('INV-006');
+    const [invoiceNumber, setInvoiceNumber] = useState(generateInvoiceNumber());
     const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
     const [dueDate, setDueDate] = useState(
         new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
@@ -135,7 +139,13 @@ export default function NewInvoice() {
         setClientInfo(prev => ({ ...prev, [field]: value }));
     };
 
-    const validateForm = () => {
+    const validateForm = (isDraft: boolean = false) => {
+        // For drafts, we don't require validation - allow saving incomplete forms
+        if (isDraft) {
+            return true;
+        }
+
+        // For sending invoice, we need full validation
         if (!clientInfo.name || !clientInfo.email) {
             setToastMessage('Please fill in client name and email');
             setToastType('error');
@@ -153,45 +163,109 @@ export default function NewInvoice() {
         return true;
     };
 
-    const handleSave = (saveAs: 'draft' | 'pending') => {
-        if (!validateForm()) return;
+    const handleSaveDraft = () => {
+        try {
+            // Create invoice object - no validation required for drafts
+            const invoiceData = {
+                issueDate,
+                dueDate,
+                status: 'draft' as const,
+                client: {
+                    name: clientInfo.name || 'Draft Client',
+                    email: clientInfo.email || '',
+                    phone: clientInfo.phone || '',
+                    address: clientInfo.address || '',
+                    company: clientInfo.company || ''
+                },
+                items: items.length > 0 ? items : [{
+                    id: '1',
+                    description: '',
+                    quantity: 1,
+                    rate: 0,
+                    amount: 0
+                }],
+                subtotal,
+                taxRate,
+                taxAmount,
+                discount,
+                discountAmount,
+                total,
+                notes,
+                terms,
+                template: selectedTemplate,
+                recurring: recurringFrequency
+            };
 
-        // In a real app, this would make an API call to save the invoice
-        console.log('Saving invoice:', {
-            invoiceNumber,
-            issueDate,
-            dueDate,
-            status: saveAs,
-            clientInfo,
-            items,
-            notes,
-            terms,
-            taxRate,
-            discount,
-            subtotal,
-            total
-        });
+            // Save to database
+            const savedInvoice = createInvoice(invoiceData);
 
-        setToastMessage(`Invoice ${saveAs === 'draft' ? 'saved as draft' : 'sent'} successfully!`);
-        setToastType('success');
-        setShowToast(true);
+            setToastMessage(`Invoice ${savedInvoice.invoiceNumber} saved as draft successfully!`);
+            setToastType('success');
+            setShowToast(true);
 
-        // Redirect after a short delay
-        setTimeout(() => {
-            router.push('/invoices');
-        }, 2000);
+            // Redirect after a short delay
+            setTimeout(() => {
+                router.push('/invoices');
+            }, 1500);
+        } catch (error) {
+            console.error('Error saving draft:', error);
+            setToastMessage('Error saving draft. Please try again.');
+            setToastType('error');
+            setShowToast(true);
+        }
     };
 
     const handleSend = () => {
-        handleSave('pending');
-    };
+        // Validate form before sending
+        if (!validateForm(false)) return;
 
-    const handleSaveDraft = () => {
-        handleSave('draft');
+        try {
+            const invoiceData = {
+                issueDate,
+                dueDate,
+                status: 'sent' as const,
+                client: {
+                    name: clientInfo.name,
+                    email: clientInfo.email,
+                    phone: clientInfo.phone,
+                    address: clientInfo.address,
+                    company: clientInfo.company
+                },
+                items,
+                subtotal,
+                taxRate,
+                taxAmount,
+                discount,
+                discountAmount,
+                total,
+                notes,
+                terms,
+                template: selectedTemplate,
+                recurring: recurringFrequency
+            };
+
+            // Save to database with 'sent' status
+            const savedInvoice = createInvoice(invoiceData);
+
+            setToastMessage(`Invoice ${savedInvoice.invoiceNumber} sent successfully!`);
+            setToastType('success');
+            setShowToast(true);
+
+            // Redirect after a short delay
+            setTimeout(() => {
+                router.push('/invoices');
+            }, 1500);
+        } catch (error) {
+            console.error('Error sending invoice:', error);
+            setToastMessage('Error sending invoice. Please try again.');
+            setToastType('error');
+            setShowToast(true);
+        }
     };
 
     const handleDownloadPDF = async () => {
-        if (!validateForm()) return;
+        // Allow PDF download for drafts without validation
+        const isDraft = true;
 
         try {
             // Dynamic import to avoid SSR issues
@@ -280,7 +354,7 @@ export default function NewInvoice() {
                             <p className="text-gray-600 mt-1">Fill in the details to generate your invoice</p>
                         </div>
                     </div>
-                    
+
                     <div className="flex space-x-3">
                         <Button variant="outline" onClick={handleDownloadPDF}>
                             <Download className="h-4 w-4 mr-2" />
@@ -515,7 +589,7 @@ export default function NewInvoice() {
                                             <span className="font-semibold text-gray-900">Subtotal</span>
                                             <span className="font-semibold text-gray-900">{subtotal.toFixed(2)}</span>
                                         </div>
-                                        
+
                                         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-300">
                                             <div className="flex items-center space-x-2">
                                                 <span className="font-semibold text-gray-900">VAT</span>
@@ -618,9 +692,8 @@ export default function NewInvoice() {
             {/* Toast Notification */}
             {showToast && (
                 <div className="fixed top-4 right-4 z-50">
-                    <div className={`max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden border ${
-                        toastType === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
-                    }`}>
+                    <div className={`max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden border ${toastType === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
+                        }`}>
                         <div className="p-4">
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">

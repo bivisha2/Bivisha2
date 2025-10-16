@@ -13,7 +13,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; message: string }>;
   register: (data: { name: string; email: string; password: string }) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
   isLoading: boolean;
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<{ success: boolean; message: string }> => {
     try {
       setIsLoading(true);
 
@@ -57,6 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.success) {
         setUser(data.user);
         localStorage.setItem('currentUser', JSON.stringify(data.user));
+        if (rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
+        }
         return { success: true, message: data.message };
       } else {
         return { success: false, message: data.message };
@@ -99,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }; const logout = () => {
     setUser(null);
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('rememberMe');
   };
 
   const value: AuthContextType = {

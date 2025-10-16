@@ -83,7 +83,7 @@ export default function Dashboard() {
                             </div>
                             <div className="ml-4">
                                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                                <p className="text-2xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</p>
+                                <p className="text-2xl font-bold text-gray-900">Rs. {stats.totalRevenue.toLocaleString()}</p>
                                 <div className="flex items-center mt-1">
                                     <TrendingUp className="h-4 w-4 text-green-500" />
                                     <span className="text-sm text-green-600 ml-1">+12% from last month</span>
@@ -220,7 +220,7 @@ export default function Dashboard() {
                                             {invoice.client}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            ${invoice.amount.toLocaleString()}
+                                            Rs. {invoice.amount.toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${getStatusColor(invoice.status)}`}>

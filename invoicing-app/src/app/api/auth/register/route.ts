@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseService } from '../../../../services/database';
+import { registerUser } from '@/services/authService';
 
 export async function POST(request: NextRequest) {
     try {
-        const { name, email, password } = await request.json();
+        const { name, email, password, phone, company } = await request.json();
 
         if (!name || !email || !password) {
             return NextResponse.json(
@@ -29,32 +29,26 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check if user already exists
-        const existingUser = await DatabaseService.getUserByEmail(email);
-
-        if (existingUser) {
-            return NextResponse.json(
-                { success: false, message: 'User with this email already exists' },
-                { status: 409 }
-            );
-        }
-
-        // Create new user
-        const newUser = await DatabaseService.createUser({
+        // Use authService to register user
+        const result = await registerUser({
             name,
             email,
             password,
-            role: 'user',
-            isActive: true
+            phone,
+            company
         });
 
-        // Remove password from user object before sending
-        const { password: _, ...userWithoutPassword } = newUser;
+        if (!result.success) {
+            return NextResponse.json(
+                { success: false, message: result.message },
+                { status: result.message.includes('already') ? 409 : 500 }
+            );
+        }
 
         return NextResponse.json({
             success: true,
-            message: 'Registration successful',
-            user: userWithoutPassword
+            message: result.message,
+            user: result.user
         });
 
     } catch (error) {

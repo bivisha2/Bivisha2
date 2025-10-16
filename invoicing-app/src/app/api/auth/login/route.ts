@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseService } from '../../../../services/database';
+import { loginUser } from '@/services/authService';
 
 export async function POST(request: NextRequest) {
     try {
@@ -12,33 +12,20 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Find user by email
-        const user = await DatabaseService.getUserByEmail(email);
+        // Use authService to login user
+        const result = await loginUser({ email, password });
 
-        if (!user) {
+        if (!result.success) {
             return NextResponse.json(
-                { success: false, message: 'Invalid email or password' },
+                { success: false, message: result.message },
                 { status: 401 }
             );
         }
-
-        // Verify password
-        const isValidPassword = await DatabaseService.verifyPassword(password, user.password || '');
-
-        if (!isValidPassword) {
-            return NextResponse.json(
-                { success: false, message: 'Invalid email or password' },
-                { status: 401 }
-            );
-        }
-
-        // Remove password from user object before sending
-        const { password: _, ...userWithoutPassword } = user;
 
         return NextResponse.json({
             success: true,
-            message: 'Login successful',
-            user: userWithoutPassword
+            message: result.message,
+            user: result.user
         });
 
     } catch (error) {

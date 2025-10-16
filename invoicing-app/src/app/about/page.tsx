@@ -120,7 +120,7 @@ export default function About() {
                                     <div className="text-sm opacity-90">Active Users</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-3xl font-bold mb-2">$2B+</div>
+                                    <div className="text-3xl font-bold mb-2">Rs. 250M+</div>
                                     <div className="text-sm opacity-90">Processed</div>
                                 </div>
                                 <div className="text-center">

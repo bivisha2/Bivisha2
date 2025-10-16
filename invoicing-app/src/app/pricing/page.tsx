@@ -25,7 +25,7 @@ export default function Pricing() {
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
                             <p className="text-gray-600 mb-6">Perfect for freelancers and small businesses</p>
                             <div className="mb-6">
-                                <span className="text-4xl font-bold text-gray-900">$9</span>
+                                <span className="text-4xl font-bold text-gray-900">Rs. 1,200</span>
                                 <span className="text-gray-600">/month</span>
                             </div>
                             <Link
@@ -73,7 +73,7 @@ export default function Pricing() {
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">Professional</h3>
                             <p className="text-gray-600 mb-6">Best for growing businesses</p>
                             <div className="mb-6">
-                                <span className="text-4xl font-bold text-gray-900">$29</span>
+                                <span className="text-4xl font-bold text-gray-900">Rs. 3,500</span>
                                 <span className="text-gray-600">/month</span>
                             </div>
                             <Link
@@ -123,7 +123,7 @@ export default function Pricing() {
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
                             <p className="text-gray-600 mb-6">For large organizations with advanced needs</p>
                             <div className="mb-6">
-                                <span className="text-4xl font-bold text-gray-900">$99</span>
+                                <span className="text-4xl font-bold text-gray-900">Rs. 12,000</span>
                                 <span className="text-gray-600">/month</span>
                             </div>
                             <Link
