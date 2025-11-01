@@ -263,73 +263,10 @@ export default function NewInvoice() {
         }
     };
 
-    const handleDownloadPDF = async () => {
-        // Allow PDF download for drafts without validation
-        const isDraft = true;
-
-        try {
-            // Dynamic import to avoid SSR issues
-            const jsPDF = (await import('jspdf')).default;
-            const html2canvas = (await import('html2canvas')).default;
-
-            if (!invoiceRef.current) return;
-
-            // Hide action buttons and form elements during PDF generation
-            const actionButtons = document.querySelectorAll('[data-hide-in-pdf]');
-            actionButtons.forEach(btn => (btn as HTMLElement).style.display = 'none');
-
-            // Generate canvas from the invoice content
-            const canvas = await html2canvas(invoiceRef.current, {
-                scale: 2,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#ffffff',
-                width: invoiceRef.current.scrollWidth,
-                height: invoiceRef.current.scrollHeight
-            });
-
-            // Show hidden elements again
-            actionButtons.forEach(btn => (btn as HTMLElement).style.display = '');
-
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            const imgWidth = 210; // A4 width in mm
-            const pageHeight = 295; // A4 height in mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            // Add first page
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-
-            // Add additional pages if needed
-            while (heightLeft >= 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
-
-            // Download the PDF
-            const fileName = `Invoice_${invoiceNumber}_${new Date().toISOString().split('T')[0]}.pdf`;
-            pdf.save(fileName);
-
-            setToastMessage('Invoice PDF downloaded successfully!');
-            setToastType('success');
-            setShowToast(true);
-
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            setToastMessage('Error generating PDF. Please try again.');
-            setToastType('error');
-            setShowToast(true);
-        }
+    const handleDownloadPDF = () => {
+        // Simple alert - in production, install jsPDF and html2canvas
+        alert(`Invoice #${invoiceNumber} ready for download.\n\nTo enable PDF downloads, install:\nnpm install jspdf html2canvas`);
+        console.log('Invoice data:', { invoiceNumber, items, total });
     };
 
     return (

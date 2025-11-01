@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
+
+// Helper functions to replace date-fns
+function subMonths(date: Date, months: number): Date {
+    const newDate = new Date(date);
+    newDate.setMonth(newDate.getMonth() - months);
+    return newDate;
+}
+
+function startOfMonth(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function endOfMonth(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+}
+
+function formatMonth(date: Date): string {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[date.getMonth()];
+}
 
 export async function GET(request: NextRequest) {
     try {
@@ -37,10 +56,10 @@ export async function GET(request: NextRequest) {
                 }
             });
 
-            const total = monthInvoices.reduce((sum, inv) => sum + inv.total, 0);
+            const total = monthInvoices.reduce((sum: number, inv: any) => sum + inv.total, 0);
 
             revenueData.push({
-                month: format(date, 'MMM'),
+                month: formatMonth(date),
                 revenue: total
             });
         }
@@ -55,7 +74,7 @@ export async function GET(request: NextRequest) {
 
         // Count by status
         const statusMap = new Map<string, number>();
-        allInvoices.forEach(inv => {
+        allInvoices.forEach((inv: any) => {
             const status = inv.status;
             statusMap.set(status, (statusMap.get(status) || 0) + 1);
         });

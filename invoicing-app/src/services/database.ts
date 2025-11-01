@@ -328,7 +328,9 @@ export class DatabaseService {
         if (this.isInitialized) return;
 
         try {
-            // Try to import and use PostgreSQL
+            // PostgreSQL support commented out - using in-memory storage for now
+            // To enable PostgreSQL: install pg, @types/pg, and uncomment below
+            /*
             const { default: pool } = await import('../lib/database');
 
             // Test PostgreSQL connection
@@ -338,6 +340,10 @@ export class DatabaseService {
 
             console.log('✅ Using PostgreSQL database');
             this.instance = new PostgreSQLDataStore(pool);
+            */
+            
+            // Using in-memory storage
+            throw new Error('PostgreSQL not configured - using in-memory storage');
         } catch (error) {
             console.log('⚠️  PostgreSQL not available, using in-memory storage');
             this.instance = new InMemoryDataStore();

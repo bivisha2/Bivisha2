@@ -11,9 +11,12 @@ import {
   BarChart3,
   PieChart,
   Download,
-  Filter
+  Filter,
+  FileDown,
+  FileSpreadsheet
 } from 'lucide-react';
 import { dataStore, Analytics } from '../lib/dataStore';
+import { ExportService } from '../utils/exportService';
 
 export default function AnalyticsDashboard() {
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
@@ -36,9 +39,66 @@ export default function AnalyticsDashboard() {
     }
   };
 
-  const exportReport = (format: 'pdf' | 'excel') => {
-    // In a real app, this would generate and download the report
-    alert(`Exporting ${format.toUpperCase()} report... (Feature would be implemented with a proper backend)`);
+  const exportReport = (format: 'csv' | 'json' | 'pdf') => {
+    if (!analytics) return;
+
+    switch (format) {
+      case 'csv':
+        ExportService.exportToCSV({
+          title: 'Analytics Report',
+          data: [{
+            total_revenue: analytics.totalRevenue,
+            pending_amount: analytics.pendingAmount,
+            overdue_amount: analytics.overdueAmount,
+            total_invoices: analytics.totalInvoices,
+            paid_invoices: analytics.paidInvoices,
+            pending_invoices: analytics.pendingInvoices,
+            overdue_invoices: analytics.overdueInvoices
+          }],
+          filename: `analytics_report_${new Date().toISOString().split('T')[0]}`
+        });
+        break;
+      case 'json':
+        ExportService.exportToJSON({
+          title: 'Analytics Summary',
+          data: [{
+            generated_at: new Date().toISOString(),
+            total_revenue: analytics.totalRevenue,
+            pending_amount: analytics.pendingAmount,
+            overdue_amount: analytics.overdueAmount,
+            total_invoices: analytics.totalInvoices,
+            paid_invoices: analytics.paidInvoices,
+            pending_invoices: analytics.pendingInvoices,
+            overdue_invoices: analytics.overdueInvoices,
+            top_clients: analytics.topClients,
+            monthly_revenue: analytics.monthlyRevenue
+          }],
+          filename: `analytics_summary_${new Date().toISOString().split('T')[0]}`
+        });
+        break;
+      case 'pdf':
+        ExportService.exportToPDF({
+          title: 'ANALYTICS REPORT',
+          data: [{
+            metric: 'Total Revenue',
+            value: `$${analytics.totalRevenue.toLocaleString()}`
+          }, {
+            metric: 'Total Invoices',
+            value: analytics.totalInvoices.toString()
+          }, {
+            metric: 'Paid Invoices',
+            value: analytics.paidInvoices.toString()
+          }, {
+            metric: 'Pending Amount',
+            value: `$${analytics.pendingAmount.toLocaleString()}`
+          }, {
+            metric: 'Overdue Amount',
+            value: `$${analytics.overdueAmount.toLocaleString()}`
+          }],
+          filename: `analytics_report_${new Date().toISOString().split('T')[0]}`
+        });
+        break;
+    }
   };
 
   if (loading) {
@@ -94,15 +154,22 @@ export default function AnalyticsDashboard() {
               onClick={() => exportReport('pdf')}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
             >
-              <Download className="h-4 w-4" />
+              <FileDown className="h-4 w-4" />
               Export PDF
             </button>
             <button
-              onClick={() => exportReport('excel')}
+              onClick={() => exportReport('csv')}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
+              <FileSpreadsheet className="h-4 w-4" />
+              Export CSV
+            </button>
+            <button
+              onClick={() => exportReport('json')}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+            >
               <Download className="h-4 w-4" />
-              Export Excel
+              Export JSON
             </button>
           </div>
         </div>

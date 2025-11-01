@@ -18,9 +18,43 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [emailSuggestion, setEmailSuggestion] = useState<string>('');
+  const [emailValid, setEmailValid] = useState<boolean | null>(null);
 
   const { register } = useAuth();
   const router = useRouter();
+
+  // Enhanced email validation with suggestions
+  const validateEmail = (email: string) => {
+    const commonDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!email) {
+      setEmailValid(null);
+      setEmailSuggestion('');
+      return;
+    }
+
+    if (emailRegex.test(email)) {
+      setEmailValid(true);
+      setEmailSuggestion('');
+      
+      // Check for common typos
+      const domain = email.split('@')[1];
+      if (domain) {
+        const suggestion = commonDomains.find(d => {
+          const similarity = d.substring(0, 3) === domain.substring(0, 3);
+          return similarity && d !== domain;
+        });
+        if (suggestion) {
+          setEmailSuggestion(`Did you mean ${email.split('@')[0]}@${suggestion}?`);
+        }
+      }
+    } else {
+      setEmailValid(false);
+      setEmailSuggestion('');
+    }
+  };
 
   const passwordRequirements = [
     { test: (pwd: string) => pwd.length >= 6, text: 'At least 6 characters' },
@@ -90,6 +124,11 @@ export default function SignupPage() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
+    // Real-time email validation
+    if (name === 'email') {
+      validateEmail(value);
+    }
+    
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -156,15 +195,44 @@ export default function SignupPage() {
                   autoComplete="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`appearance-none block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
-                    }`}
+                  className={`appearance-none block w-full pl-10 pr-10 py-3 border rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
+                    errors.email 
+                      ? 'border-red-500 bg-red-50' 
+                      : emailValid === true 
+                        ? 'border-green-500 bg-green-50' 
+                        : emailValid === false 
+                          ? 'border-red-500 bg-red-50'
+                          : 'border-gray-300 bg-white'
+                  }`}
                   placeholder="Enter your email"
                 />
+                {emailValid === true && (
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                  </div>
+                )}
+                {emailValid === false && formData.email && (
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    <AlertCircle className="h-5 w-5 text-red-500" />
+                  </div>
+                )}
               </div>
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.email}
+                </p>
+              )}
+              {emailSuggestion && !errors.email && (
+                <p className="mt-1 text-sm text-blue-600 flex items-center">
+                  <Mail className="h-4 w-4 mr-1" />
+                  {emailSuggestion}
+                </p>
+              )}
+              {emailValid === true && !errors.email && (
+                <p className="mt-1 text-sm text-green-600 flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Valid email address
                 </p>
               )}
             </div>

@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { TrendingUp, DollarSign, Users, FileText, Clock, CheckCircle, AlertCircle, Plus, ArrowRight, Eye } from 'lucide-react';
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { format } from 'date-fns';
 
 export default function Dashboard() {
     const router = useRouter();

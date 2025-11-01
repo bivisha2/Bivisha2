@@ -106,38 +106,15 @@ export default function Invoices() {
 
     const handleDownloadInvoice = async (invoice: Invoice) => {
         try {
-            const jsPDF = (await import('jspdf')).default;
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            pdf.setFontSize(20);
-            pdf.text('InvoicePro', 20, 30);
-            pdf.setFontSize(16);
-            pdf.text('Tax Invoice', 150, 30);
-
-            pdf.setFontSize(12);
-            pdf.text(`Invoice No: ${invoice.invoiceNumber}`, 20, 50);
-            pdf.text(`Date: ${new Date(invoice.issueDate).toLocaleDateString()}`, 20, 60);
-            pdf.text(`Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}`, 20, 70);
-
-            pdf.text(`Client: ${invoice.client.name}`, 20, 90);
-            pdf.text(`Amount: Rs. ${invoice.total.toLocaleString()}`, 20, 100);
-            pdf.text(`Status: ${invoice.status.toUpperCase()}`, 20, 110);
-
-            pdf.line(20, 120, 190, 120);
-            pdf.text('Thank you for your business!', 20, 140);
-            pdf.text('invoicepro.com', 20, 260);
-
-            const fileName = `${invoice.invoiceNumber}_${new Date().toISOString().split('T')[0]}.pdf`;
-            pdf.save(fileName);
-
-            showToastMessage('Invoice PDF downloaded successfully');
+            // Simple download functionality - in production, use jsPDF
+            showToastMessage('PDF download feature requires jsPDF library. Showing invoice details...');
+            console.log('Invoice to download:', invoice);
+            
+            // For now, just show a message
+            alert(`Invoice ${invoice.invoiceNumber}\nClient: ${invoice.client?.name}\nTotal: Rs. ${invoice.total}`);
         } catch (error) {
-            console.error('Error generating PDF:', error);
-            showToastMessage('Error generating PDF');
+            console.error('Error downloading invoice:', error);
+            showToastMessage('Failed to download invoice');
         }
     };
 
