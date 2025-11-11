@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   TrendingUp,
-  DollarSign,
+  Banknote,
   Users,
   FileText,
   AlertCircle,
@@ -81,7 +81,7 @@ export default function AnalyticsDashboard() {
           title: 'ANALYTICS REPORT',
           data: [{
             metric: 'Total Revenue',
-            value: `$${analytics.totalRevenue.toLocaleString()}`
+            value: `Rs. ${analytics.totalRevenue.toLocaleString()}`
           }, {
             metric: 'Total Invoices',
             value: analytics.totalInvoices.toString()
@@ -90,10 +90,10 @@ export default function AnalyticsDashboard() {
             value: analytics.paidInvoices.toString()
           }, {
             metric: 'Pending Amount',
-            value: `$${analytics.pendingAmount.toLocaleString()}`
+            value: `Rs. ${analytics.pendingAmount.toLocaleString()}`
           }, {
             metric: 'Overdue Amount',
-            value: `$${analytics.overdueAmount.toLocaleString()}`
+            value: `Rs. ${analytics.overdueAmount.toLocaleString()}`
           }],
           filename: `analytics_report_${new Date().toISOString().split('T')[0]}`
         });
@@ -190,7 +190,7 @@ export default function AnalyticsDashboard() {
                   </span>
                 </div>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <Banknote className="h-8 w-8 text-green-600" />
             </div>
           </div>
 
@@ -384,7 +384,7 @@ export default function AnalyticsDashboard() {
                   <tr key={clientData.client.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <div className="shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
                           <span className="text-sm font-medium text-blue-600">
                             #{index + 1}
                           </span>

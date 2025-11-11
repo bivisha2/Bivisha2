@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Download, Eye, Edit, Trash2, Plus, Calendar, DollarSign } from 'lucide-react';
+import { Search, Filter, Download, Eye, Edit, Trash2, Plus, Calendar, Banknote } from 'lucide-react';
 import Link from 'next/link';
 
 interface Invoice {
@@ -95,16 +95,16 @@ export default function InvoiceList({ invoices = [] }: InvoiceListProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-green-600 font-medium">Paid</p>
-              <p className="text-2xl font-bold text-green-700">${paidAmount.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-green-700">Rs. {paidAmount.toLocaleString()}</p>
             </div>
-            <DollarSign className="h-8 w-8 text-green-500" />
+            <Banknote className="h-8 w-8 text-green-500" />
           </div>
         </div>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-blue-600 font-medium">Pending</p>
-              <p className="text-2xl font-bold text-blue-700">${pendingAmount.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-blue-700">Rs. {pendingAmount.toLocaleString()}</p>
             </div>
             <Calendar className="h-8 w-8 text-blue-500" />
           </div>
@@ -113,9 +113,9 @@ export default function InvoiceList({ invoices = [] }: InvoiceListProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-purple-600 font-medium">Total</p>
-              <p className="text-2xl font-bold text-purple-700">${totalAmount.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-purple-700">Rs. {totalAmount.toLocaleString()}</p>
             </div>
-            <DollarSign className="h-8 w-8 text-purple-500" />
+            <Banknote className="h-8 w-8 text-purple-500" />
           </div>
         </div>
       </div>
@@ -239,7 +239,7 @@ export default function InvoiceList({ invoices = [] }: InvoiceListProps) {
                       <div className="text-sm text-gray-500">{invoice.dueDate}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">${invoice.amount.toLocaleString()}</div>
+                      <div className="text-sm font-semibold text-gray-900">Rs. {invoice.amount.toLocaleString()}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(invoice.status)}`}>

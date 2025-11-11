@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Package, Tag, DollarSign, Hash } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, Tag, Banknote, Hash } from 'lucide-react';
 import { dataStore, Product } from '../lib/dataStore';
 
 interface ProductFormData {
@@ -207,7 +207,7 @@ export default function ProductManagement() {
                   Rs. {products.length > 0 ? Math.round(products.reduce((sum, p) => sum + p.price, 0) / products.length) : 0}
                 </p>
               </div>
-              <DollarSign className="h-8 w-8 text-yellow-600" />
+              <Banknote className="h-8 w-8 text-yellow-600" />
             </div>
           </div>
 

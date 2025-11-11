@@ -15,6 +15,12 @@ export default function Invoices() {
     const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
     const [selectedFilter, setSelectedFilter] = useState<InvoiceStatus | 'all'>('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
+    const [sortBy, setSortBy] = useState<'date' | 'amount' | 'client'>('date');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const [selectedInvoices, setSelectedInvoices] = useState<string[]>([]);
+    const [showBulkActions, setShowBulkActions] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [invoiceToDelete, setInvoiceToDelete] = useState<string | null>(null);
     const [showToast, setShowToast] = useState(false);
@@ -37,7 +43,7 @@ export default function Invoices() {
 
     useEffect(() => {
         applyFilters();
-    }, [selectedFilter, searchQuery, invoices]);
+    }, [selectedFilter, searchQuery, invoices, dateFrom, dateTo, sortBy, sortOrder]);
 
     const loadInvoices = () => {
         const allInvoices = getAllInvoices();
@@ -61,6 +67,27 @@ export default function Invoices() {
                 inv.client.company.toLowerCase().includes(query)
             );
         }
+
+        // Date range filter
+        if (dateFrom) {
+            filtered = filtered.filter(inv => new Date(inv.issueDate) >= new Date(dateFrom));
+        }
+        if (dateTo) {
+            filtered = filtered.filter(inv => new Date(inv.issueDate) <= new Date(dateTo));
+        }
+
+        // Sorting
+        filtered.sort((a, b) => {
+            let comparison = 0;
+            if (sortBy === 'date') {
+                comparison = new Date(a.issueDate).getTime() - new Date(b.issueDate).getTime();
+            } else if (sortBy === 'amount') {
+                comparison = a.total - b.total;
+            } else if (sortBy === 'client') {
+                comparison = a.client.name.localeCompare(b.client.name);
+            }
+            return sortOrder === 'asc' ? comparison : -comparison;
+        });
 
         setFilteredInvoices(filtered);
     };
@@ -102,6 +129,40 @@ export default function Invoices() {
         setToastMessage(message);
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
+    };
+
+    const toggleSelectInvoice = (id: string) => {
+        setSelectedInvoices(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedInvoices.length === filteredInvoices.length) {
+            setSelectedInvoices([]);
+        } else {
+            setSelectedInvoices(filteredInvoices.map(inv => inv.id));
+        }
+    };
+
+    const handleBulkDelete = () => {
+        let deletedCount = 0;
+        selectedInvoices.forEach(id => {
+            if (deleteInvoice(id)) deletedCount++;
+        });
+        showToastMessage(`${deletedCount} invoice(s) deleted successfully`);
+        setSelectedInvoices([]);
+        loadInvoices();
+    };
+
+    const handleBulkStatusChange = (status: InvoiceStatus) => {
+        let updatedCount = 0;
+        selectedInvoices.forEach(id => {
+            if (updateInvoiceStatus(id, status)) updatedCount++;
+        });
+        showToastMessage(`${updatedCount} invoice(s) updated to ${status}`);
+        setSelectedInvoices([]);
+        loadInvoices();
     };
 
     const handleDownloadInvoice = async (invoice: Invoice) => {
@@ -263,13 +324,108 @@ export default function Invoices() {
                             </Link>
                         </div>
                     </div>
+
+                    {/* Advanced Filters */}
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Date From</label>
+                                <input
+                                    type="date"
+                                    value={dateFrom}
+                                    onChange={(e) => setDateFrom(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Date To</label>
+                                <input
+                                    type="date"
+                                    value={dateTo}
+                                    onChange={(e) => setDateTo(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value as 'date' | 'amount' | 'client')}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="date">Date</option>
+                                    <option value="amount">Amount</option>
+                                    <option value="client">Client Name</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                                <select
+                                    value={sortOrder}
+                                    onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="desc">Newest First</option>
+                                    <option value="asc">Oldest First</option>
+                                </select>
+                            </div>
+                        </div>
+                        {(dateFrom || dateTo) && (
+                            <button
+                                onClick={() => { setDateFrom(''); setDateTo(''); }}
+                                className="mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                            >
+                                Clear Date Filters
+                            </button>
+                        )}
+                    </div>
                 </div>
+
+                {/* Bulk Actions Bar */}
+                {selectedInvoices.length > 0 && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
+                                <span className="text-sm font-medium text-blue-900">
+                                    {selectedInvoices.length} invoice{selectedInvoices.length > 1 ? 's' : ''} selected
+                                </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={() => handleBulkStatusChange('sent')}
+                                    className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                >
+                                    Mark as Sent
+                                </button>
+                                <button
+                                    onClick={() => handleBulkStatusChange('paid')}
+                                    className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    Mark as Paid
+                                </button>
+                                <button
+                                    onClick={handleBulkDelete}
+                                    className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                >
+                                    Delete Selected
+                                </button>
+                                <button
+                                    onClick={() => setSelectedInvoices([])}
+                                    className="px-3 py-1.5 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                                >
+                                    Clear Selection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Draft Info Banner */}
                 {selectedFilter === 'draft' && stats.draftCount > 0 && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                         <div className="flex items-start">
-                            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3 shrink-0" />
                             <div>
                                 <h3 className="text-sm font-medium text-blue-900">Draft Invoices</h3>
                                 <p className="text-sm text-blue-700 mt-1">
@@ -289,6 +445,14 @@ export default function Invoices() {
                             <table className="w-full">
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
+                                        <th className="px-6 py-3 text-left">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedInvoices.length === filteredInvoices.length && filteredInvoices.length > 0}
+                                                onChange={toggleSelectAll}
+                                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                            />
+                                        </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Invoice
                                         </th>
@@ -315,6 +479,14 @@ export default function Invoices() {
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {filteredInvoices.map((invoice) => (
                                         <tr key={invoice.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedInvoices.includes(invoice.id)}
+                                                    onChange={() => toggleSelectInvoice(invoice.id)}
+                                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                                />
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
                                                     <FileText className="h-5 w-5 text-gray-400 mr-3" />
