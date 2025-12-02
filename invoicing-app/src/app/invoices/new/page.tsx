@@ -24,6 +24,7 @@ import {
 import Button from '@/components/Button';
 import Breadcrumb from '@/components/Breadcrumb';
 import { createInvoice, generateInvoiceNumber } from '@/services/invoiceService';
+import { downloadInvoicePDF, sendInvoiceEmail } from '@/utils/invoiceHelpers';
 import type { Invoice, RecurringFrequency } from '@/types/invoice';
 
 interface InvoiceItem {
@@ -215,11 +216,55 @@ export default function NewInvoice() {
         }
     };
 
-    const handleSend = () => {
+    const handleSend = async () => {
         // Validate form before sending
         if (!validateForm(false)) return;
 
+        // Confirm with user before sending
+        const confirmSend = window.confirm(
+            `Send invoice to:\n\n` +
+            `Client: ${clientInfo.name}\n` +
+            `Email: ${clientInfo.email}\n\n` +
+            `This will:\n` +
+            `1. Open Gmail to send the invoice\n` +
+            `2. Mark the invoice as "Sent"\n\n` +
+            `Do you want to continue?`
+        );
+
+        if (!confirmSend) {
+            return;
+        }
+
         try {
+            // First, send the email via Gmail
+            const emailData = {
+                invoiceNumber,
+                clientName: clientInfo.name,
+                clientEmail: clientInfo.email,
+                amount: total,
+                dueDate,
+                issueDate,
+                items: items.map(item => ({
+                    description: item.description,
+                    quantity: item.quantity,
+                    price: item.rate,
+                    total: item.amount
+                })),
+                subtotal,
+                tax: taxAmount,
+                notes
+            };
+
+            const emailSent = await sendInvoiceEmail(emailData);
+
+            if (!emailSent) {
+                setToastMessage('Failed to open email client. Please try again.');
+                setToastType('error');
+                setShowToast(true);
+                return;
+            }
+
+            // Then save to database with 'sent' status
             const invoiceData = {
                 issueDate,
                 dueDate,
@@ -247,14 +292,14 @@ export default function NewInvoice() {
             // Save to database with 'sent' status
             const savedInvoice = createInvoice(invoiceData);
 
-            setToastMessage(`Invoice ${savedInvoice.invoiceNumber} sent successfully!`);
+            setToastMessage(`Gmail opened! Invoice ${savedInvoice.invoiceNumber} will be marked as sent after you send the email.`);
             setToastType('success');
             setShowToast(true);
 
             // Redirect after a short delay
             setTimeout(() => {
                 router.push('/invoices');
-            }, 1500);
+            }, 2500);
         } catch (error) {
             console.error('Error sending invoice:', error);
             setToastMessage('Error sending invoice. Please try again.');
@@ -263,10 +308,72 @@ export default function NewInvoice() {
         }
     };
 
-    const handleDownloadPDF = () => {
-        // Simple alert - in production, install jsPDF and html2canvas
-        alert(`Invoice #${invoiceNumber} ready for download.\n\nTo enable PDF downloads, install:\nnpm install jspdf html2canvas`);
-        console.log('Invoice data:', { invoiceNumber, items, total });
+    const handleDownloadPDF = async () => {
+        try {
+            // Generate filename with invoice number or timestamp
+            const fileName = `invoice-${invoiceNumber || Date.now()}.pdf`;
+            
+            // Show loading message
+            setToastMessage('Generating PDF... Please wait...');
+            setToastType('success');
+            setShowToast(true);
+
+            // Small delay to ensure the toast is visible and DOM is ready
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            console.log('Starting PDF download...');
+            const success = await downloadInvoicePDF('invoice-content', fileName);
+        
+            if (success) {
+                setToastMessage(`PDF downloaded successfully: ${fileName}`);
+                setToastType('success');
+                setShowToast(true);
+            } else {
+                setToastMessage('Failed to generate PDF. Please check console for errors.');
+                setToastType('error');
+                setShowToast(true);
+            }
+        } catch (error) {
+            console.error('PDF download error:', error);
+            setToastMessage(`Error: ${error instanceof Error ? error.message : 'Failed to download PDF'}`);
+            setToastType('error');
+            setShowToast(true);
+        }
+    };
+
+    const handleSendEmail = async () => {
+        if (!validateForm(false)) {
+            return;
+        }
+
+        const invoiceData = {
+            invoiceNumber,
+            clientName: clientInfo.name,
+            clientEmail: clientInfo.email,
+            amount: total,
+            dueDate,
+            issueDate,
+            items: items.map(item => ({
+                description: item.description,
+                quantity: item.quantity,
+                price: item.rate,
+                total: item.amount
+            })),
+            subtotal,
+            tax: taxAmount,
+            notes
+        };
+
+        const success = await sendInvoiceEmail(invoiceData);
+        if (success) {
+            setToastMessage('Gmail opened with invoice details!');
+            setToastType('success');
+            setShowToast(true);
+        } else {
+            setToastMessage('Failed to open email. Please try again.');
+            setToastType('error');
+            setShowToast(true);
+        }
     };
 
     return (
@@ -297,6 +404,10 @@ export default function NewInvoice() {
                             <Download className="h-4 w-4 mr-2" />
                             Download PDF
                         </Button>
+                        <Button variant="outline" onClick={handleSendEmail}>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Send Email
+                        </Button>
                         <Button variant="outline" onClick={handleSaveDraft}>
                             <Save className="h-4 w-4 mr-2" />
                             Save as Draft
@@ -309,9 +420,9 @@ export default function NewInvoice() {
                 </div>
 
                 {/* Invoice Form - Professional Layout */}
-                <div ref={invoiceRef} className="bg-white rounded-lg shadow-lg border border-gray-200">
+                <div id="invoice-content" ref={invoiceRef} className="bg-white rounded-lg shadow-lg border border-gray-200">
                     {/* Invoice Header with Blue Background */}
-                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg">
+                    <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                                 <FileText className="h-8 w-8" />
@@ -511,7 +622,7 @@ export default function NewInvoice() {
                             {/* Total in Words */}
                             <div>
                                 <div className="font-semibold text-gray-900 mb-2">Total in words:</div>
-                                <div className="border-2 border-gray-300 rounded p-3 min-h-[80px] bg-gray-50">
+                                <div className="border-2 border-gray-300 rounded p-3 min-h-20 bg-gray-50">
                                     <span className="text-gray-700 font-medium">
                                         {total === 0 ? 'Zero' : `${total.toFixed(2)} Rupees Only`}
                                     </span>
@@ -633,7 +744,7 @@ export default function NewInvoice() {
                         }`}>
                         <div className="p-4">
                             <div className="flex items-start">
-                                <div className="flex-shrink-0">
+                                <div className="shrink-0">
                                     {toastType === 'success' ? (
                                         <CheckCircle className="h-5 w-5 text-green-500" />
                                     ) : (
@@ -643,7 +754,7 @@ export default function NewInvoice() {
                                 <div className="ml-3 w-0 flex-1 pt-0.5">
                                     <p className="text-sm font-medium text-gray-900">{toastMessage}</p>
                                 </div>
-                                <div className="ml-4 flex-shrink-0 flex">
+                                <div className="ml-4 shrink-0 flex">
                                     <button
                                         className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500"
                                         onClick={() => setShowToast(false)}

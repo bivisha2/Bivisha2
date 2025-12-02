@@ -341,7 +341,7 @@ export class DatabaseService {
             console.log('✅ Using PostgreSQL database');
             this.instance = new PostgreSQLDataStore(pool);
             */
-            
+
             // Using in-memory storage
             throw new Error('PostgreSQL not configured - using in-memory storage');
         } catch (error) {

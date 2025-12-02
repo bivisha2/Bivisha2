@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, Save, Eye } from 'lucide-react';
 import InvoiceView from './InvoiceView';
+import { downloadInvoicePDF, sendInvoiceEmail } from '@/utils/invoiceHelpers';
 
 interface InvoiceItem {
   description: string;
@@ -143,6 +144,48 @@ export default function CreateInvoice() {
     alert('Invoice saved successfully!');
   };
 
+  const handleDownloadPDF = async () => {
+    const fileName = `invoice-${formData.invoiceNumber || 'draft'}.pdf`;
+    const success = await downloadInvoicePDF('invoice-preview', fileName);
+    if (success) {
+      alert('Invoice PDF downloaded successfully!');
+    } else {
+      alert('Failed to generate PDF. Please try again.');
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!formData.clientName) {
+      alert('Please enter client name');
+      return;
+    }
+
+    // Extract email from client address or use a default
+    const clientEmail = formData.clientAddress.match(/[\w.-]+@[\w.-]+\.\w+/)?.[0] || '';
+
+    if (!clientEmail) {
+      alert('Please include client email in the address field');
+      return;
+    }
+
+    const invoiceData = {
+      invoiceNumber: formData.invoiceNumber || generateInvoiceNumber(),
+      clientName: formData.clientName,
+      clientEmail: clientEmail,
+      amount: total,
+      dueDate: formData.dueDate,
+      issueDate: formData.invoiceDate,
+      notes: formData.notes
+    };
+
+    const success = await sendInvoiceEmail(invoiceData);
+    if (success) {
+      alert('Gmail compose window opened with invoice details!');
+    } else {
+      alert('Failed to open email client. Please try again.');
+    }
+  };
+
   const { subtotal, vatAmount, total } = calculateTotals();
 
   const invoiceData = {
@@ -166,13 +209,15 @@ export default function CreateInvoice() {
               ← Back to Edit
             </button>
           </div>
-          <InvoiceView
-            invoice={invoiceData}
-            onEdit={() => setShowPreview(false)}
-            onDownload={() => window.print()}
-            onPrint={() => window.print()}
-            onSend={() => alert('Send functionality would be implemented here')}
-          />
+          <div id="invoice-preview">
+            <InvoiceView
+              invoice={invoiceData}
+              onEdit={() => setShowPreview(false)}
+              onDownload={handleDownloadPDF}
+              onPrint={() => window.print()}
+              onSend={handleSendEmail}
+            />
+          </div>
         </div>
       </div>
     );

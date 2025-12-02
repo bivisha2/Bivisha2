@@ -30,7 +30,7 @@ export class BackupService {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     const filename = `invoicepro_backup_${new Date().toISOString().replace(/:/g, '-')}.json`;
-    
+
     link.href = url;
     link.download = filename;
     document.body.appendChild(link);
@@ -40,7 +40,7 @@ export class BackupService {
 
     // Save to localStorage as well
     this.saveToLocalStorage(backupData);
-    
+
     console.log('✅ Backup created successfully:', filename);
   }
 
@@ -70,7 +70,7 @@ export class BackupService {
   static restoreFromJSON(jsonString: string): boolean {
     try {
       const backupData = JSON.parse(jsonString);
-      
+
       // Validate backup structure
       if (!backupData.version || !backupData.data) {
         console.error('❌ Invalid backup format');
@@ -79,10 +79,10 @@ export class BackupService {
 
       // Clear existing data
       console.log('🔄 Clearing existing data...');
-      
+
       // Restore data
       console.log('🔄 Restoring data...');
-      
+
       if (backupData.data.clients) {
         backupData.data.clients.forEach((client: any) => {
           dataStore.createClient(client);
@@ -116,7 +116,7 @@ export class BackupService {
   static restoreFromLocalStorage(): boolean {
     try {
       const backupData = localStorage.getItem(this.BACKUP_KEY);
-      
+
       if (!backupData) {
         console.log('ℹ️ No backup found in localStorage');
         return false;
@@ -139,7 +139,7 @@ export class BackupService {
   // Get last backup info
   static getLastBackupInfo(): { exists: boolean; timestamp?: string } {
     const timestamp = localStorage.getItem(this.BACKUP_TIMESTAMP_KEY);
-    
+
     if (!timestamp) {
       return { exists: false };
     }
@@ -154,7 +154,7 @@ export class BackupService {
   private static readFile(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      
+
       reader.onload = (e) => {
         if (e.target?.result) {
           resolve(e.target.result as string);
@@ -162,7 +162,7 @@ export class BackupService {
           reject(new Error('Failed to read file'));
         }
       };
-      
+
       reader.onerror = () => reject(new Error('File reading error'));
       reader.readAsText(file);
     });
@@ -192,7 +192,7 @@ export class BackupService {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     const filename = `${type}_${new Date().toISOString().split('T')[0]}.json`;
-    
+
     link.href = url;
     link.download = filename;
     document.body.appendChild(link);
@@ -204,7 +204,7 @@ export class BackupService {
   // Check if auto-backup is needed (e.g., every hour)
   static shouldAutoBackup(): boolean {
     const lastBackup = localStorage.getItem(this.BACKUP_TIMESTAMP_KEY);
-    
+
     if (!lastBackup) return true;
 
     const lastBackupTime = new Date(lastBackup).getTime();

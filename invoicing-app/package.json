@@ -13,6 +13,8 @@
     "@tailwindcss/postcss": "^4.1.14",
     "autoprefixer": "^10.4.21",
     "bcryptjs": "^3.0.2",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.4",
     "lucide-react": "^0.544.0",
     "next": "15.5.3",
     "postcss": "^8.5.6",
@@ -30,7 +32,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
-    "markdown-pdf": "^11.0.0",
     "typescript": "^5"
   }
 }

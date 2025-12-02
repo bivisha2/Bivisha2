@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     try {
         // Get user (in production, get from authenticated session)
         const users = await prisma.user.findMany();
-        
+
         if (users.length === 0) {
             return NextResponse.json({
                 revenue: [],

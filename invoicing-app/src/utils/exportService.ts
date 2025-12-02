@@ -10,7 +10,7 @@ export class ExportService {
   // Export to CSV
   static exportToCSV(data: ExportData): void {
     const { data: rows, filename } = data;
-    
+
     if (rows.length === 0) {
       alert('No data to export');
       return;
@@ -18,11 +18,11 @@ export class ExportService {
 
     // Get headers from first object
     const headers = Object.keys(rows[0]);
-    
+
     // Create CSV content
     const csvContent = [
       headers.join(','), // Header row
-      ...rows.map(row => 
+      ...rows.map(row =>
         headers.map(header => {
           const value = row[header];
           // Handle values that might contain commas
@@ -41,7 +41,7 @@ export class ExportService {
   // Export to JSON
   static exportToJSON(data: ExportData): void {
     const { data: rows, filename } = data;
-    
+
     const jsonContent = JSON.stringify(rows, null, 2);
     this.downloadFile(jsonContent, `${filename}.json`, 'application/json');
   }
@@ -49,7 +49,7 @@ export class ExportService {
   // Export to PDF (simplified - creates a formatted text file)
   static exportToPDF(data: ExportData): void {
     const { title, data: rows, filename } = data;
-    
+
     let content = `${title}\n`;
     content += `Generated: ${new Date().toLocaleString()}\n`;
     content += `${'='.repeat(80)}\n\n`;
@@ -58,11 +58,11 @@ export class ExportService {
       content += 'No data available\n';
     } else {
       const headers = Object.keys(rows[0]);
-      
+
       // Add header
       content += headers.map(h => h.toUpperCase().padEnd(20)).join(' | ') + '\n';
       content += '-'.repeat(80) + '\n';
-      
+
       // Add rows
       rows.forEach(row => {
         content += headers.map(h => {
